@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 import Dashboard from "./Dashboard";
+import Signin from "./Signin";
 import axios from 'axios';
+import "./signin.css";
+
 
 class App extends Component {
 
@@ -15,9 +18,6 @@ class App extends Component {
   get_values = (event) => {
     const name = event.target.name; // username
     const val = event.target.value // values
-
-    console.log("Name: ", name);
-    console.log("Value: ", val);
     this.setState({ [name]: val });
   };
 
@@ -27,18 +27,18 @@ class App extends Component {
     console.log(this.state);
 
     axios({
-      url:"/signup",
-      method:"POST",
-      data:this.state
+      url: "/signup",
+      method: "POST",
+      data: this.state
     })
-    .then((data) => {
-      // TODO
-      console.log("Data: ", data);
-    })
-    .catch((err) => {
-      // TODO
-      console.log("Error: ", err.response );
-    });
+      .then((data) => {
+        this.props.history.push("/dashboard");
+      })
+      .catch((error) => {
+        // TODO
+        console.log("Error: ", error.response);
+        this.setState({ error: error.response.data.error });
+      });
   };
 
 
@@ -50,6 +50,10 @@ class App extends Component {
           <input type="password" name="password" onChange={this.get_values} />
           <button onClick={this.sign_up}> Sign Up</button>
         </form>
+
+        <div>
+          <p className="errors"> {this.state.error}</p>
+        </div>
       </div>
     );
   }
@@ -62,6 +66,7 @@ const Routes = () => {
     <BrowserRouter >
       <div>
         <Route path="/" exact component={App} />
+        <Route path="/signin" exact component={Signin} />
         <Route path="/dashboard" exact component={Dashboard} />
       </div>
     </BrowserRouter>
